@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pretax Withdrawal Calculator (MFJ, California, 2026)</title>
+<style>
+:root{--bg:#f7f6f2;--card:#fff;--tx:#1f2421;--mut:#667068;--ac:#1d6b4f;--bd:#dcdad2;--hi:#e8f3ee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151816;--card:#1e2320;--tx:#e9ece8;--mut:#9aa39c;--ac:#5fc79b;--bd:#323934;--hi:#1f3329;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#151816;--card:#1e2320;--tx:#e9ece8;--mut:#9aa39c;--ac:#5fc79b;--bd:#323934;--hi:#1f3329;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:860px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:1.4rem;margin:0 0 4px}
+.sub{color:var(--mut);margin:0 0 18px;font-size:.92rem}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:16px}
+label{display:block;font-size:.85rem;color:var(--mut);margin:10px 0 4px}
+.in{display:flex;align-items:center;border:1px solid var(--bd);border-radius:8px;background:var(--bg);padding:0 10px}
+.in span{color:var(--mut)}
+input,select{width:100%;border:0;background:transparent;color:var(--tx);font:inherit;padding:9px 6px;outline:none}
+select{border:1px solid var(--bd);border-radius:8px;background:var(--bg);padding:9px 10px}
+.big{background:var(--hi);border-radius:10px;padding:14px;margin-bottom:12px}
+.big .l{font-size:.85rem;color:var(--mut)}
+.big .v{font-size:2rem;font-weight:700;color:var(--ac)}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+td{padding:6px 0;border-bottom:1px solid var(--bd)}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+tr.t td{font-weight:700;border-bottom:0}
+.note{font-size:.8rem;color:var(--mut);margin-top:14px}
+.warn{color:#b45309;font-size:.85rem;margin-top:8px}
+.scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+<main>
+<h1>Pretax Withdrawal Calculator</h1>
+<p class="sub">Married filing jointly · 2026 federal rules · choose your state. Enter the after-tax income you want; the tool solves for the IRA/401(k) withdrawal.</p>
+<div class="grid">
+<section class="card">
+<label for="st">State of residence</label>
+<select id="st"><option value="CA" selected>California</option><option value="IN">Indiana</option><option value="NV">Nevada</option></select>
+<label for="net">Desired after-tax income (per year)</label>
+<div class="in"><span>$</span><input id="net" type="number" value="200000" step="1000" inputmode="decimal"></div>
+<label for="pen">Pension (taxable, per year)</label>
+<div class="in"><span>$</span><input id="pen" type="number" value="40000" step="1000" inputmode="decimal"></div>
+<label for="qd">Qualified dividends (per year)</label>
+<div class="in"><span>$</span><input id="qd" type="number" value="10000" step="1000" inputmode="decimal"></div>
+<label for="ss">Social Security benefits, combined (per year)</label>
+<div class="in"><span>$</span><input id="ss" type="number" value="00000" step="1000" inputmode="decimal"></div>
+<label for="n65">Spouses age 65 or older</label>
+<select id="n65"><option value="0">0</option><option value="1">1</option><option value="2" selected>2</option></select>
+<div id="caBox"><label for="cai">California bracket inflation adjustment vs. 2025 (%)</label>
+<div class="in"><input id="cai" type="number" value="0" step="0.5" inputmode="decimal"><span>%</span></div></div>
+<div id="inBox" style="display:none"><label for="cty">Indiana county income tax rate (%), check your county with Indiana DOR</label>
+<div class="in"><input id="cty" type="number" value="1.5" step="0.05" inputmode="decimal"><span>%</span></div></div>
+<p class="note">Pension, dividends and Social Security are the amounts you receive before tax.</p>
+</section>
+<section class="card">
+<div class="big"><div class="l">Pretax withdrawal needed</div><div class="v" id="W">–</div><div class="l" id="Wsub"></div></div>
+<div class="scroll"><table id="tb"></table></div>
+<div id="warn" class="warn"></div>
+</section>
+</div>
+<p class="note">Estimate only, not tax advice. Federal figures use 2026 amounts: standard deduction $32,200 (+$1,650 per spouse 65+), the $6,000-per-person senior deduction (phases out 6% above $150,000 MAGI), 2026 brackets, 0%/15%/20% qualified-dividend thresholds ($98,900 / $613,700 taxable income), 3.8% NIIT above $250,000 MAGI, and Social Security taxability tiers ($32,000 / $44,000). State taxes: Nevada has no personal income tax. Indiana is a flat 2.95% (2026) plus your county rate, after $1,000 personal exemptions per spouse plus $1,000 for each spouse 65+, with Social Security excluded. California has not published 2026 indexed amounts, so this uses the 2025 FTB brackets, standard deduction ($11,412), exemption credits ($153 each, $122 senior credit each) and the 1% surcharge above $1M; adjust with the inflation box. California does not tax Social Security. Ignores itemized deductions, capital gains, state-tax SALT effects, tax-exempt interest, credits and AMT.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const FED=[[24800,.10],[100800,.12],[211400,.22],[403550,.24],[512450,.32],[768700,.35],[Infinity,.37]];
+const CA=[[22158,.01],[52528,.02],[82904,.04],[115084,.06],[145448,.08],[742958,.093],[891542,.103],[1485906,.113],[Infinity,.123]];
+function prog(x,br,k=1){let t=0,lo=0;for(const [hi,r] of br){const h=hi*k;if(x>lo)t+=(Math.min(x,h)-lo)*r;lo=h;if(x<=h)break}return t}
+function calc(W,p){
+ const {pen,qd,ss,n,k,st,cty}=p;
+ const pi=W+pen+qd+0.5*ss;let tss=0;
+ if(pi>32000){tss=pi<=44000?Math.min(.5*(pi-32000),.5*ss):Math.min(.85*ss,.85*(pi-44000)+Math.min(6000,.5*ss))}
+ const ord=W+pen+tss,agi=ord+qd;
+ const std=32200+1650*n;
+ const sen=Math.max(0,6000*n-0.06*Math.max(0,agi-150000));
+ const ti=Math.max(0,agi-std-sen);
+ const qdIn=Math.min(qd,ti),ordTI=ti-qdIn,top=ti;
+ const ordTax=prog(ordTI,FED);
+ const q15=Math.max(0,Math.min(top,613700)-Math.max(ordTI,98900));
+ const q20=Math.max(0,top-Math.max(ordTI,613700));
+ const qdTax=q15*.15+q20*.20;
+ const niit=.038*Math.max(0,Math.min(qd,agi-250000));
+ const fed=ordTax+qdTax+niit;
+ let ca=0;
+ if(st==='CA'){
+  const caTI=Math.max(0,W+pen+qd-11412*k);
+  ca=prog(caTI,CA,k)+.01*Math.max(0,caTI-1000000*k);
+  ca=Math.max(0,ca-(306+122*n)*k);
+ }else if(st==='IN'){
+  const inTI=Math.max(0,W+pen+qd-(2000+1000*n));
+  ca=inTI*(.0295+cty);
+ }
+ const gross=W+pen+qd+ss;
+ return {fed,ca,ordTax,qdTax,niit,tss,agi,ti,std,sen,gross,net:gross-fed-ca};
+}
+const f=x=>'$'+Math.round(x).toLocaleString('en-US');
+const pc=x=>(x*100).toFixed(1)+'%';
+function run(){
+ const v=id=>Math.max(0,parseFloat($(id).value)||0);
+ const p={pen:v('pen'),qd:v('qd'),ss:v('ss'),n:+$('n65').value,k:1+(parseFloat($('cai').value)||0)/100,st:$('st').value,cty:(parseFloat($('cty').value)||0)/100};
+ const target=v('net');
+ let W=0,r=calc(0,p),note='';
+ if(r.net>=target){note='Your other income sources already cover this target, so no withdrawal is needed.'}
+ else{let lo=0,hi=5e6;for(let i=0;i<60;i++){const m=(lo+hi)/2;calc(m,p).net<target?lo=m:hi=m}W=hi;r=calc(W,p)}
+ $('caBox').style.display=p.st==='CA'?'':'none';$('inBox').style.display=p.st==='IN'?'':'none';
+ $('W').textContent=f(W);
+ $('Wsub').textContent=r.gross>0?'Total taxes '+f(r.fed+r.ca)+' ('+pc((r.fed+r.ca)/r.gross)+' of gross income)':'';
+ const rows=[
+  ['Pretax withdrawal',W],['Pension',p.pen],['Qualified dividends',p.qd],['Social Security',p.ss],['Gross income',r.gross],
+  ['Taxable Social Security (federal)',r.tss],['Federal AGI',r.agi],['Federal deductions (std + senior)',r.std+r.sen],['Federal taxable income',r.ti],
+  ['Federal tax on ordinary income',r.ordTax],['Federal tax on qualified dividends',r.qdTax],['Net investment income tax',r.niit],
+  ['Federal tax total',r.fed],[({CA:'California',IN:'Indiana',NV:'Nevada'}[p.st])+(p.st==='IN'?' state + county':' state')+' tax',r.ca],['After-tax income',r.net]];
+ $('tb').innerHTML=rows.map((x,i)=>'<tr'+([4,14].includes(i)?' class="t"':'')+'><td>'+x[0]+'</td><td>'+f(x[1])+'</td></tr>').join('');
+ $('warn').textContent=note;
+}
+document.querySelectorAll('input,select').forEach(e=>e.addEventListener('input',run));
+run();
+</script>
+</body>
+</html>
